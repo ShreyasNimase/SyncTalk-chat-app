@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -7,26 +10,58 @@ export default function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // loader
+  const [error, setError] = useState(""); // error message
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login:", form);
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/user/login",
+        form,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      
+      toast.success("Login successful");
+
+      // Save token to localStorage
+      localStorage.setItem("userInfo", JSON.stringify(res.data));
+      console.log(localStorage.getItem("userInfo"));
+
+      // Redirect to chat page
+      navigate("/chats");
+    } catch (err) {
+      console.error("Login Error:", err);
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Auto-fill guest credentials
   const fillGuestCredentials = () => {
     setForm({
       email: "guest@example.com",
       password: "123456",
     });
+    toast.info("Guest credentials filled");
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
-      {/* Email Input */}
+      {error && <p className="bg-red-100 text-red-700 p-2 rounded">{error}</p>}
+
       <input
         type="email"
         name="email"
@@ -37,7 +72,6 @@ export default function Login() {
         required
       />
 
-      {/* Password Input */}
       <div className="relative">
         <input
           type={showPassword ? "text" : "password"}
@@ -58,19 +92,20 @@ export default function Login() {
         </button>
       </div>
 
-      {/* Login Button */}
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+        disabled={loading}
+        className={`w-full py-3 rounded-lg transition text-white 
+          ${loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"}
+        `}
       >
-        Login
+        {loading ? "Logging in..." : "Login"}
       </button>
 
-      {/* Guest Button */}
       <button
         type="button"
         onClick={fillGuestCredentials}
-        className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition"
+        className="w-full bg-red-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition"
       >
         Get Guest User Credentials
       </button>

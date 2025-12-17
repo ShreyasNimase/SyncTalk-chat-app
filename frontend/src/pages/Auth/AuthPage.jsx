@@ -6,10 +6,11 @@ export default function AuthPage() {
     <div className="min-h-screen w-full bg-gray-100 flex flex-col lg:flex-row items-center justify-center lg:justify-center px-6 lg:px-20 py-6 lg:py-0">
       {/* LEFT SECTION */}
       <div className="flex flex-col items-center text-center lg:text-left flex-1">
+        {/* <div className="hidden lg:flex flex-col items-center text-center lg:text-left flex-1"> */}
         <img
           src={takifyImg}
           alt="Chat Illustration"
-          className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto mb-6"
+          className="hidden lg:block w-full max-w-lg xl:max-w-xl mx-auto mb-6"
         />
         <h1 className="text-5xl sm:text-6xl font-bold text-blue-600">
           Talkify

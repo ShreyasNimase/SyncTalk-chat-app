@@ -1,24 +1,48 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+
+import HomePage from "./Pages/HomePage";
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import AuthPage from "./pages/Auth/AuthPage";
-import HomePage from "./Pages/HomePage";
 import ChatPage from "./Pages/ChatPage";
-import './App.css';
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import AuthRedirect from "./components/AuthRedirect";
 
 function App() {
   return (
-    <div className="App">
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <Routes>
-        <Route path="/auth" element={<AuthPage />}>
+        <Route path="/" element={<HomePage />} />
+
+        <Route
+          path="/auth"
+          element={
+            <AuthRedirect>
+              <AuthPage />
+            </AuthRedirect>
+          }
+        >
+          <Route index element={<Navigate to="login" replace />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
         </Route>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/chats" element={<ChatPage />} />
+
+        <Route
+          path="/chats"
+          element={
+            <ProtectedRoute>
+              <ChatPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+    </>
   );
 }
 

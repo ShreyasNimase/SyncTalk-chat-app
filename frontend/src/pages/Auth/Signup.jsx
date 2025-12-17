@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, {useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Signup() {
   const [form, setForm] = useState({
@@ -11,6 +13,8 @@ export default function Signup() {
   const [profileImage, setProfileImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,11 +34,16 @@ export default function Signup() {
     data.append("password", form.password);
     data.append("profileImage", profileImage);
 
-    const res = await axios.post("http://localhost:5000/api/signup", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    try {
+      const res = await axios.post("/api/user/signup", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-    console.log("Signup success:", res.data);
+      toast.success("Registered successfully!");
+      navigate("/auth/login");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Signup failed");
+    }
   };
 
   return (
@@ -42,7 +51,6 @@ export default function Signup() {
       onSubmit={handleSubmit}
       className="space-y-4 w-full max-w-md mx-auto p-4 sm:p-6"
     >
-
       <div className="flex flex-col items-center space-y-3">
         {preview && (
           <img
@@ -52,7 +60,10 @@ export default function Signup() {
           />
         )}
 
-        <label className="text-sm font-medium text-gray-600">
+        <label
+          htmlFor="profileImage"
+          className="text-sm font-medium text-gray-600"
+        >
           Upload Profile Image
         </label>
 
