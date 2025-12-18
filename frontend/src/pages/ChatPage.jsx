@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getUser } from "../utils/auth";
-import guestUserAvtar from "../assets/guestUser.jpeg";
 
 function ChatPage() {
   const navigate = useNavigate();
@@ -20,7 +19,7 @@ function ChatPage() {
 
       <div className="flex flex-col items-center mt-10">
         <img
-          src={user.profileImage || guestUserAvtar}
+          src={user.pic}
           alt="profile_pic"
           className="w-32 h-32 rounded-full object-cover mb-4"
         />

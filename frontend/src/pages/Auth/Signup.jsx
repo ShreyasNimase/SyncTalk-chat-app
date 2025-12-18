@@ -1,7 +1,7 @@
 import React, {useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import api from "../../api/axios";
 
 export default function Signup() {
   const [form, setForm] = useState({
@@ -35,7 +35,7 @@ export default function Signup() {
     data.append("profileImage", profileImage);
 
     try {
-      const res = await axios.post("/api/user/signup", data, {
+      await api.post("/api/user/signup", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

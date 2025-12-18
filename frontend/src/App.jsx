@@ -9,12 +9,13 @@ import ChatPage from "./Pages/ChatPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRedirect from "./components/AuthRedirect";
+import AuthWatcher from "./components/AuthWatcher";
 
 function App() {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-
+      <AuthWatcher />
       <Routes>
         <Route path="/" element={<HomePage />} />
 

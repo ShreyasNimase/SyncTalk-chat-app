@@ -1,27 +1,26 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
-const generateToken = require("../config/generateToken");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../config/tokens");
 
 // REGISTER
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Please enter all fields",
-    });
+    res.status(400);
+    throw new Error("Please enter all fields");
   }
 
   const userExists = await User.findOne({ email });
   if (userExists) {
-    return res.status(409).json({
-      success: false,
-      message: "User already exists",
-    });
+    res.status(409);
+    throw new Error("User already exists");
   }
 
-  // Cloudinary URL provided automatically by multer-storage-cloudinary
+  // Cloudinary URL provided by multer
   const pic = req.file ? req.file.path : undefined;
 
   const user = await User.create({
@@ -31,12 +30,24 @@ const registerUser = asyncHandler(async (req, res) => {
     pic,
   });
 
+  // Generate tokens
+  const accessToken = generateAccessToken(user._id);
+  const refreshToken = generateRefreshToken(user._id);
+
+  // Store refresh token in httpOnly cookie
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
   res.status(201).json({
     _id: user._id,
     name: user.name,
     email: user.email,
     pic: user.pic,
-    token: generateToken(user._id),
+    token: accessToken,
   });
 });
 
@@ -45,20 +56,30 @@ const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
+
   if (user && (await user.matchPassword(password))) {
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      // maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 2 * 60 * 1000,
+    });
+
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       pic: user.pic,
-      token: generateToken(user._id),
+      token: accessToken,
     });
-    console.log(res);
+
   } else {
-    res.status(401).json({
-      success: false,
-      message: "Invalid email or password",
-    })
+    res.status(401);
+    throw new Error("Invalid email or password");
   }
 });
 

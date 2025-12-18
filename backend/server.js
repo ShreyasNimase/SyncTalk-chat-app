@@ -1,16 +1,19 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+
 const connectDB = require("./config/db");
 dotenv.config();
-
 const userRoutes = require("./routes/userRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
-const cors = require("cors");
+
 
 connectDB();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser()); // for refresh token
 app.use(express.urlencoded({ extended: true }));
 
 app.use(

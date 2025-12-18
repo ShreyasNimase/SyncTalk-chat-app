@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import api from "../../api/axios";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -25,14 +25,10 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/user/login",
-        form,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      
+      const res = await api.post("/api/user/login", form, {
+        headers: { "Content-Type": "application/json" },
+      });
+
       toast.success("Login successful");
 
       // Save token to localStorage

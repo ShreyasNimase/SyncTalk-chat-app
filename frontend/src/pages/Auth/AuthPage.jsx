@@ -6,7 +6,6 @@ export default function AuthPage() {
     <div className="min-h-screen w-full bg-gray-100 flex flex-col lg:flex-row items-center justify-center lg:justify-center px-6 lg:px-20 py-6 lg:py-0">
       {/* LEFT SECTION */}
       <div className="flex flex-col items-center text-center lg:text-left flex-1">
-        {/* <div className="hidden lg:flex flex-col items-center text-center lg:text-left flex-1"> */}
         <img
           src={takifyImg}
           alt="Chat Illustration"

@@ -2,10 +2,10 @@ const express = require("express");
 const { registerUser, authUser } = require("../controllers/userController");
 const upload = require("../middleware/upload");
 const multer = require("multer");
+const { refreshToken } = require("../controllers/refreshController");
 
 const router = express.Router();
 
-// router.post("/signup", upload.single("profileImage"), registerUser);
 router.post("/login", authUser);
 
 router.post(
@@ -30,4 +30,7 @@ router.post(
   },
   registerUser
 );
+
+router.post("/refresh", refreshToken);
+
 module.exports = router;
